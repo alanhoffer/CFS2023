@@ -9,12 +9,18 @@ let url = "http://localhost:3000/mock.json"
 
 load();
 
-async function load() {
+async function load(identificador) {
+
     let container = document.querySelector("#tblPistas");
     container.innerHTML = "<h1>Loading...</h1>";
     try {
 
-        let response = await fetch("http://localhost:3000/pista");
+        if (identificador)
+            url = `/pista/${identificador}`;
+        else
+            url = '/pista';
+
+        let response = await fetch("http://localhost:3000" + url);
 
         if (response.ok) {
             let res = await response.json();
@@ -28,6 +34,14 @@ async function load() {
     }
 }
 
+btnBuscar.addEventListener("click", () => {
+    console.log("Función Buscar");
+    let identificador = parseInt(document.querySelector("#identificador").value);
+    if (identificador) {
+        load(identificador);
+    }
+    document.querySelector("#identificador").value = "";
+});
 
 function agregar() {
     console.log("Función Agregar");

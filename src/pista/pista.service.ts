@@ -1,36 +1,30 @@
 import { Injectable } from '@nestjs/common';
+import { Pista } from './pista-entity';
+import * as fs from 'fs'
 
 @Injectable()
 export class PistaService {
-    private listaPistas = [{
-        "identificador": 1,
-        "titulo": "Bohemian Rapshody",
-        "duracion": 420,
-        "interprete": "Queen",
-        "lanzamiento": 1997
-    }, {
-        "identificador": 2,
-        "titulo": "BToas",
-        "duracion": 420,
-        "interprete": "Jejejje",
-        "lanzamiento": 1997
-    }, {
-        "identificador": 3,
-        "titulo": "Mar",
-        "duracion": 420,
-        "interprete": "Antonio",
-        "lanzamiento": 1997
-    }, {
-        "identificador": 4,
-        "titulo": "Luz",
-        "duracion": 420,
-        "interprete": "Pepe",
-        "lanzamiento": 1997
-    }]
+    private listaPistas = []
 
-    public getPistas(): any {
+    constructor(){
+        this.loadPistas();
+    }
+
+    public getPista(id:number){
+        return this.listaPistas.find(pista => pista.identificador == id);
+    }
+
+    public getPistas(): Pista[] {
         return this.listaPistas;
     }
 
-
+    private loadPistas(): void {
+        let archivo = fs.readFileSync('src/assets/pistas.csv', 'utf8');
+        let datos = archivo.split('\n').map(p => p.replace('\r', '')).map(p => p.split(','));
+        this.listaPistas = [];
+        for (let i = 0; i < datos.length; i++) {
+            let pista = new Pista(parseInt(datos[i][0]), datos[i][1], parseInt(datos[i][2]), datos[i][3]);
+            this.listaPistas.push(pista);
+        }
+    }
 }
